@@ -1,3 +1,8 @@
+#include <deprecated.h>
+#include <MFRC522.h>
+#include <MFRC522Extended.h>
+#include <require_cpp11.h>
+
 /**
  * Verlauf 
  * 29.8.16  Status LED als Konstante, NFC Gain im Main code
@@ -55,7 +60,7 @@
 
 
 #define SS_PIN 10  //slave select pin
-#define RST_PIN 5  //reset pin
+#define RST_PIN 9  //reset pin
 MFRC522 mfrc522(SS_PIN, RST_PIN);        
 MFRC522::MIFARE_Key key;
 
@@ -98,7 +103,7 @@ int writeBlock(int blockNumber, byte arrayAddress[])
   byte status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
   //byte PCD_Authenticate(byte command, byte blockAddr, MIFARE_Key *key, Uid *uid);
   //this method is used to authenticate a certain block for writing or reading
-  //command: See enumerations above -> PICC_CMD_MF_AUTH_KEY_A	= 0x60 (=1100000),		// this command performs authentication with Key A
+  //command: See enumerations above -> PICC_CMD_MF_AUTH_KEY_A  = 0x60 (=1100000),    // this command performs authentication with Key A
   //blockAddr is the number of the block from 0 to 15.
   //MIFARE_Key *key is a pointer to the MIFARE_Key struct defined above, this struct needs to be defined for each block. New cards have all A/B= FF FF FF FF FF FF
   //Uid *uid is a pointer to the UID struct that contains the user ID of the card.
@@ -134,7 +139,7 @@ int readBlock(int blockNumber, byte arrayAddress[])
   byte status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
   //byte PCD_Authenticate(byte command, byte blockAddr, MIFARE_Key *key, Uid *uid);
   //this method is used to authenticate a certain block for writing or reading
-  //command: See enumerations above -> PICC_CMD_MF_AUTH_KEY_A	= 0x60 (=1100000),		// this command performs authentication with Key A
+  //command: See enumerations above -> PICC_CMD_MF_AUTH_KEY_A = 0x60 (=1100000),    // this command performs authentication with Key A
   //blockAddr is the number of the block from 0 to 15.
   //MIFARE_Key *key is a pointer to the MIFARE_Key struct defined above, this struct needs to be defined for each block. New cards have all A/B= FF FF FF FF FF FF
   //Uid *uid is a pointer to the UID struct that contains the user ID of the card.
@@ -217,14 +222,14 @@ void loop(){
   //digitalWrite(status_led_1_Pin, HIGH);
         /***************************************** contact with a tag/card**********************************************************************/
   mfrc522.PCD_Init();      
-  	// Look for new cards (in case you wonder what PICC means: proximity integrated circuit card)
-	if ( ! mfrc522.PICC_IsNewCardPresent()) {//if PICC_IsNewCardPresent returns 1, a new card has been found and we continue
-		return;//if it did not find a new card is returns a '0' and we return to the start of the loop
-	}
-	// Select one of the cards
-	if ( ! mfrc522.PICC_ReadCardSerial()) {//if PICC_ReadCardSerial returns 1, the "uid" struct 
-		return;//if it returns a '0' something went wrong and we return to the start of the loop
-	}
+    // Look for new cards (in case you wonder what PICC means: proximity integrated circuit card)
+  if ( ! mfrc522.PICC_IsNewCardPresent()) {//if PICC_IsNewCardPresent returns 1, a new card has been found and we continue
+    return;//if it did not find a new card is returns a '0' and we return to the start of the loop
+  }
+  // Select one of the cards
+  if ( ! mfrc522.PICC_ReadCardSerial()) {//if PICC_ReadCardSerial returns 1, the "uid" struct 
+    return;//if it returns a '0' something went wrong and we return to the start of the loop
+  }
 
   
   Serial.println("Chip gefunden!");
