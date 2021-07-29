@@ -1,7 +1,11 @@
+# PlatformIO excludes
+.pio
 .pioenvs
 .clang_complete
 .gcc-flags.json
 .piolibdeps
+
+#Visual Studio Code excludes
 .vscode/c_cpp_properties.json
 .vscode
 .vscode/.browse.c_cpp.db*
