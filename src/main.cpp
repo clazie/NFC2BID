@@ -93,10 +93,102 @@ bool lesefehler = false;
 //byte blockcontent[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//all zeros. This can be used to delete a block.
 byte readbackblock[18];//This array is used for reading out a block. The MIFARE_Read method requires a buffer that is at least 18 bytes to hold the 16 bytes of a block.
 
+#pragma pack(push, 1)
+typedef struct {
+  uint16_t  checksum;         // [0..1]  Checksum, sum up bytes from 2..127
+  uint16_t  act_charge;       // [2..3]
+  uint16_t  max_charged;      // [4..5]
+  uint16_t  chg_cycles;       // [6..7]
+  uint8_t   unknown_8[63-7];  // [8..63]
+  uint8_t   year;             // [64]
+  uint8_t   month;            // [65]
+  uint8_t   day;              // [66]
+  uint8_t   acctyp;           // [67]
+  uint8_t   cells;            // [68]
+  uint16_t  capacity;         // [69..70]
+  uint16_t  chg_current;      // [71..72]
+  uint16_t  dischg_current;   // [73..74]
+  uint16_t  dischg_limit;     // [75..76] discharge limit in mv/Cell
+  uint8_t   d_peak;           // [77] delta peak value
+  uint8_t   cut_temp;         // [78] cut off temperature
+  uint8_t   unknown;
+  uint8_t   unknown75[128-80];
+}tBID_data;
+#pragma pack(pop)
 
 //#################################################
 // funktions
 //#################################################
+void endianSwap(uint16_t* w)
+{
+  *w = (((*w>>8) & 0x00ff) | ((*w & 0x00ff)<<8));
+}
+
+void printByteHex(uint8_t b)
+{
+  char buffer[4];
+  sprintf(buffer, "%02x", b); 
+  Serial.print(buffer);
+}
+
+void print_BID_Data()
+{
+  Serial.println("Print BID Data");
+
+  //HEX-Dump
+  int i = 0;
+  while(i<256)
+  {
+    printByteHex(i);  // Address
+    Serial.print(":");
+    
+    int j = 0;
+    while(j < 16)
+    {
+      Serial.print(" ");
+      printByteHex(BID_NFC[i]);
+      j++;
+      i++;
+    }
+    Serial.println();
+  }
+
+  //Print Data
+  tBID_data bidData;
+  memcpy(&bidData,&BID_NFC,sizeof(bidData));
+  endianSwap(&bidData.checksum);
+  endianSwap(&bidData.act_charge);
+  endianSwap(&bidData.max_charged);
+  endianSwap(&bidData.chg_cycles);
+  endianSwap(&bidData.capacity);
+  endianSwap(&bidData.chg_current);
+  endianSwap(&bidData.dischg_current);
+  endianSwap(&bidData.dischg_limit);
+  Serial.print("Checksum:       "); Serial.println(bidData.checksum);
+  Serial.print("act_charge:     "); Serial.println(bidData.act_charge);
+  Serial.print("max_charged:    "); Serial.println(bidData.max_charged);
+  Serial.print("chg_cycles:     "); Serial.println(bidData.chg_cycles);
+  Serial.print("year:           "); Serial.println(bidData.year);
+  Serial.print("month:          "); Serial.println(bidData.month);
+  Serial.print("day:            "); Serial.println(bidData.day);
+  Serial.print("acctyp:         "); Serial.println(bidData.acctyp);
+  Serial.print("cells:          "); Serial.println(bidData.cells);
+  Serial.print("capacity:       "); Serial.println(bidData.capacity);
+  Serial.print("chg_current:    "); Serial.println(bidData.chg_current);
+  Serial.print("dischg_current: "); Serial.println(bidData.dischg_current);
+  Serial.print("dischg_limit:   "); Serial.println(bidData.dischg_limit);
+  Serial.print("d_peak:         "); Serial.println(bidData.d_peak);
+  Serial.print("cut_temp:       "); Serial.println(bidData.cut_temp);
+  Serial.print("unknown:        "); Serial.println(bidData.unknown);
+  Serial.print("unknown_8[0]:   "); Serial.println(bidData.unknown_8[0]);
+  Serial.print("unknown_8[1]:   "); Serial.println(bidData.unknown_8[1]);
+  Serial.print("unknown_8[2]:   "); Serial.println(bidData.unknown_8[2]);
+  Serial.print("unknown_8[3]:   "); Serial.println(bidData.unknown_8[3]);
+  Serial.print("unknown_8[4]:   "); Serial.println(bidData.unknown_8[4]);
+  Serial.print("unknown_8[5]:   "); Serial.println(bidData.unknown_8[5]);
+  Serial.print("unknown_8[6]:   "); Serial.println(bidData.unknown_8[6]);
+  Serial.print("unknown_8[7]:   "); Serial.println(bidData.unknown_8[7]);
+}
 
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
@@ -315,6 +407,9 @@ void read_from_NFC_to_RAM()
   }
   Serial.print("ende lesen");
   Serial.println("");
+  
+  print_BID_Data();
+  
   digitalWrite(status_led_1_Pin, HIGH);
 }
 
