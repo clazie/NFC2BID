@@ -56,12 +56,6 @@
  * 
  */
 
-
-
-
-
-
-
 #define SS_PIN 10  //slave select pin
 #define RST_PIN 9  //reset pin
 
@@ -328,7 +322,9 @@ void read_from_NFC_to_RAM()
 
 void setup() {
   pinMode(status_led_1_Pin, OUTPUT); 
-  Serial.begin(115200);        // Initialize serial communications with the PC
+  Serial.begin(115200);      // Initialize serial communications with the PC
+  Serial.println(VERSION);
+  
   SPI.begin();               // Init SPI bus
   mfrc522.PCD_Init();        // Init MFRC522 card (in case you wonder what PCD means: proximity coupling device)
   Serial.println("Scan a MIFARE Classic card");
