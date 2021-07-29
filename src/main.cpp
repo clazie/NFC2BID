@@ -86,10 +86,10 @@ byte blockcontent[16] =  {"               "};
 byte Chip_serial[16] =   {"               "};
 byte aktiver_Chip_serial[16] =   {"               "};
 int chip_status =0;
-bool _bid_aktiv =0;
-bool daten_syncron =1;
-bool Chip_wechsel=1;
-bool lesefehler=0;
+bool _bid_aktiv = false;
+bool daten_syncron = true;
+bool Chip_wechsel = true;
+bool lesefehler = false;
 //byte blockcontent[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//all zeros. This can be used to delete a block.
 byte readbackblock[18];//This array is used for reading out a block. The MIFARE_Read method requires a buffer that is at least 18 bytes to hold the 16 bytes of a block.
 
@@ -116,7 +116,7 @@ void receiveEvent(int howMany) {
   //Serial.println(last_byte);         // print the integer
   if (t==1){
     dat=0;
-    daten_syncron =0;
+    daten_syncron = false;
     BID_aktiv[adresse]=last_byte;
 
     //DEBUG EEPROM Schreiben    
@@ -324,7 +324,7 @@ void setup() {
   pinMode(status_led_1_Pin, OUTPUT); 
   Serial.begin(115200);      // Initialize serial communications with the PC
   Serial.println(VERSION);
-  
+
   SPI.begin();               // Init SPI bus
   mfrc522.PCD_Init();        // Init MFRC522 card (in case you wonder what PCD means: proximity coupling device)
   Serial.println("Scan a MIFARE Classic card");
@@ -344,7 +344,7 @@ void setup() {
 
 void loop()
 {
-  if (lesefehler==1){
+  if (lesefehler == true){
     delay(10);
     Serial.println(" read err loop");
     digitalWrite(status_led_1_Pin, !digitalRead(status_led_1_Pin));
@@ -352,7 +352,7 @@ void loop()
   else
   {
     delay(400);
-    if (daten_syncron == 0)
+    if (daten_syncron == false)
     {
       Serial.println("loop");
       Serial.println("Syncronisieren noetig");
@@ -398,7 +398,7 @@ void loop()
   /***************************************** Erster BID Bei Programmstart  **********************************************************************/ 
   
   // Fuer Programmstart erste Verbindung zum bid  -- NFC
-  if (_bid_aktiv == 0)
+  if (_bid_aktiv == false)
   {
     err=0;
     
@@ -418,27 +418,27 @@ void loop()
     Serial.println(err);       
     if (err == 1)
     {
-      lesefehler=1;  
+      lesefehler = true;  
     }
     else
     {    
       Wire.begin(I2C_Adresse_BID_Chip);
-      daten_syncron =1;
-      Chip_wechsel=0;
-      lesefehler=0;
-      _bid_aktiv=1;
+      daten_syncron = true;
+      Chip_wechsel = false;
+      lesefehler = false;
+      _bid_aktiv = true;
       digitalWrite(status_led_1_Pin, HIGH);
     }
   }
   
   /*****************************************Abgleich ob ein Chip mit anderer Seriennumer gesteckt wurde **********************************************************************/ 
   // Abgleich ob ein Chip mit anderer Seriennumer gesteckt wurde
-  Chip_wechsel=0;
+  Chip_wechsel = false;
   for (int z=0 ; z<16 ; z++)
   {
     if (aktiver_Chip_serial[z] != Chip_serial[z])
     {
-      Chip_wechsel=1;
+      Chip_wechsel = true;
       Serial.println(aktiver_Chip_serial[z]);
       Serial.println(" ");
       Serial.println(Chip_serial[z]);
@@ -447,7 +447,7 @@ void loop()
   }
 
   /***************************************** Bei ungleichheit NFC / Ram daten Auf NFC Sichen **********************************************************************/
-  if (daten_syncron ==0 && Chip_wechsel==0 && _bid_aktiv==1)
+  if (daten_syncron == false && Chip_wechsel == false && _bid_aktiv == true)
   {
     err=0;
     Write_from_Ram_to_NFC();
@@ -457,18 +457,18 @@ void loop()
     digitalWrite(status_led_1_Pin, HIGH);
     if (err==0)
     {    
-      daten_syncron =1;
+      daten_syncron = true;
     }   
   }
 
   /***************************************** Neuen Chip nicht annehmen solange noch ungesicherte daten da sind **********************************************************************/
-  if (daten_syncron ==0 && Chip_wechsel==1 && _bid_aktiv==1)
+  if (daten_syncron == false && Chip_wechsel == true && _bid_aktiv == true)
   {
     Serial.println("Daten Nicht Syncron !!! Kein Chipwechsel");
   }
 
   /***************************************** Chipwechsel wenn alle daten gesichert **********************************************************************/  
-  if (daten_syncron ==1 && Chip_wechsel==1 && _bid_aktiv==1)
+  if (daten_syncron == false && Chip_wechsel == true && _bid_aktiv == true)
   {
     Serial.println("led low");
     
@@ -483,7 +483,7 @@ void loop()
       BID_aktiv[z]=BID_NFC[z];
     }
 
-    lesefehler=1;           
+    lesefehler = true;           
     delay(BID_Reconnect_time);
     //Serial.println("Chip Gewechselt");
     if (err==0)
@@ -494,22 +494,22 @@ void loop()
         aktiver_Chip_serial[z]=Chip_serial[z];
       }       
       Wire.begin(I2C_Adresse_BID_Chip);
-      lesefehler=0;
-      daten_syncron =1;
-      Chip_wechsel=0;    
+      lesefehler = false;
+      daten_syncron = true;
+      Chip_wechsel = false;    
       Serial.println("Chip Gewechselt");
       if (BID_NFC[64] == 100)
       {
         Serial.println("Jahreszahl 2100 erkannt");
         Wire.begin(I2C_Adresse_BID_no_Chip);
-        _bid_aktiv =0;
-        daten_syncron =1;
-        Chip_wechsel=1;
+        _bid_aktiv = false;
+        daten_syncron = true;
+        Chip_wechsel = true;
         delay(5000);  
       }
     } 
 
-    if (_bid_aktiv ==1)
+    if (_bid_aktiv == true)
     {
       digitalWrite(status_led_1_Pin, HIGH);
     }
