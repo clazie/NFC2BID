@@ -7,7 +7,7 @@ This project is based on a project from Rainer Kembügler ("onki") from  02. Dez
 
 Information can also found here: `https://www.rc-network.de/threads/bid2nfc-als-nachr%C3%BCstl%C3%B6sung.587281/ <https://www.rc-network.de/threads/bid2nfc-als-nachr%C3%BCstl%C3%B6sung.587281/>`_
 
-I collected all informations nececery to build it by my own and refactored the firmware for 
+I collected all informations necessary to build it by my own and refactored the firmware for 
 using it with PlatformIO.
 
 
