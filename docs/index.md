@@ -1,4 +1,4 @@
-# IBC Regenwasser Container Steuerung und Füllstandsüberwachung
+# NFC2BID
 
 Diese Dokumentation wurde mit MkDocs erstellt. Bitte bei Änderungen nicht die Html-Seiten auf dem Webserver ändern, sondern die **"*.md"** Datei im Unterverzeichnis **"docs"** der Quelldateien ändern.
 
@@ -15,4 +15,4 @@ Mit dem Kommando
 ```sh
 mkdocs build
 ```
-werden die Html-Dateien erzeugt und in das Webserver Verzeichnis `\\raspidbsrv\web\html\doku\NodeMCU` kopiert und kann dann im Webbrowser unter der Adresse [`https://192.168.15.107/doku/NodeMCU/`](https://192.168.15.107/doku/NodeMCU/) aufgerufen werden.
+werden die Html-Dateien erzeugt und in das Webserver Verzeichnis `\\raspidbsrv\web\html\doku\nfc2bid` kopiert und kann dann im Webbrowser unter der Adresse [`https://192.168.15.107/doku/nfc2bid/`](https://192.168.15.107/doku/nfc2bid/) aufgerufen werden.
