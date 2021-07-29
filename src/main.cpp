@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#include "global.h"
+
 // Setup RFID CHIP
 #include <deprecated.h>
 #include <MFRC522.h>
