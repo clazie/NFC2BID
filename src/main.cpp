@@ -382,13 +382,14 @@ void loop()
   /*****************************************Auslesen der Seriennummer **********************************************************************/
   block=0;
   err =0;
+  Serial.print("Lese Seriennummer aus :");
   readBlock(block, Chip_serial);//read the block back
   if (err==1)
   {
-   return; 
+    Serial.println("Error reading Chip Serial");
+    return; 
   }
     
-  Serial.print("Lese Seriennummer aus :");
   for (int j=0 ; j<16 ; j++) //print the block contents
   {
     Serial.print (Chip_serial[j],HEX);//Serial.write() transmits the ASCII numbers as human readable characters to serial monitor
@@ -468,7 +469,7 @@ void loop()
   }
 
   /***************************************** Chipwechsel wenn alle daten gesichert **********************************************************************/  
-  if (daten_syncron == false && Chip_wechsel == true && _bid_aktiv == true)
+  if (daten_syncron == true && Chip_wechsel == true && _bid_aktiv == true)
   {
     Serial.println("led low");
     
