@@ -51,7 +51,7 @@
  * ----------------------------------
  * Masse       Schwarz         GND         
  * SCL         Weiss           5      
- * SCK         Gruen           4
+ * SDA         Gruen           4
 
  * 
  */
